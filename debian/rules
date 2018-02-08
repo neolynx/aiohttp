@@ -1,0 +1,22 @@
+#!/usr/bin/make -f
+
+export PYBUILD_NAME = aiohttp
+# enable pytest also here to make backports easier
+export PYBUILD_TEST_PYTEST=1
+export PYBUILD_TEST_ARGS={dir}/tests
+
+%:
+	dh $@ --with python3,sphinxdoc --buildsystem pybuild
+
+override_dh_auto_clean:
+	rm -rf .cache
+	dh_auto_clean
+	rm -f aiohttp/_*.c
+
+override_dh_strip:
+	dh_strip --no-automatic-dbgsym
+
+override_dh_auto_test:
+	# disable tests for now:
+	# https://bugs.python.org/issue28634 needs to be fixed in Debian 
+	# and tests patched to not access internet during build (see https://bugs.debian.org/830567)
